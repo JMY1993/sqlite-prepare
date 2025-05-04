@@ -32,10 +32,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/sqlite-prepare.git"
+    "url": "https://github.com/JMY1993/sqlite-prepare"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/sqlite-prepare/issues"
+    "url": "https://github.com/JMY1993/sqlite-prepare"
   },
-  "homepage": "https://github.com/yourusername/sqlite-prepare#readme"
+  "homepage": "https://github.com/JMY1993/sqlite-prepare#readme"
 }
