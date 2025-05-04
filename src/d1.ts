@@ -22,7 +22,7 @@ import { prepare } from "./query_builder";
  * const users = await prepareD1()`SELECT * FROM users WHERE id = ${userId}`.all();
  * ```
  */
-export const wrapD1 = async (db: D1Database) => {
+export const wrapD1 = (db: D1Database) => {
     // Check if the database is connected
     if (!db) {
         throw new Error('Database connection is not established.');
