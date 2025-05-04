@@ -27,5 +27,5 @@ export const wrapD1 = (db: D1Database) => {
     if (!db) {
         throw new Error('Database connection is not established.');
     }
-    return (strings: TemplateStringsArray, ...values: any[]) => prepare.bind(null, db, strings, ...values);
+    return prepare.bind(null, db);
 }
