@@ -86,7 +86,11 @@ const getEntries = async (table: string, condition?: { field: string, value: any
 
 ## Features
 
-- Type-safe SQL query building
+- Parsing parameters:
+  * Array: `[1, 2, 3, 4, 5] => (?, ?, ?, ?, ?) & [1, 2, 3, 4, 5]`
+  * Date: Only parameterize, value unchanged, SQLite parameter binding handles this conversion automatically
+  * Uint8Array | ArrayBuffer: Only parameterize, value unchanged, SQLite parameter binding handles this conversion automatically
+  * Normal javascript object: JSON.stringify
 - Parameterized queries for SQL injection protection
 - Support for nested subqueries
 - Works with Cloudflare D1
