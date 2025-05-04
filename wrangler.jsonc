@@ -1,0 +1,13 @@
+{
+  // This is a dummy wrangler.jsonc, which is needed for the vitest to run. 
+  "name": "sqlite-prepare",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-03",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sqlite-prepare",
+      "database_id": "simple_id_here"
+    }
+  ]
+}

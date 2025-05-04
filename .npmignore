@@ -1,0 +1,23 @@
+# Source
+src/
+
+# Tests
+test/
+*.spec.ts
+*.test.ts
+vitest.config.ts
+
+# Config files
+tsconfig.json
+wrangler.jsonc
+pnpm-workspace.yaml
+pnpm-lock.yaml
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+
+# Misc
+node_modules/
+.DS_Store

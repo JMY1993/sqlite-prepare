@@ -1,0 +1,41 @@
+{
+  "name": "sqlite-prepare",
+  "version": "0.0.1",
+  "description": "A type-safe SQL query builder for Cloudflare D1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "vitest",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "cloudflare",
+    "d1",
+    "sql",
+    "query-builder",
+    "sqlite",
+    "parameterized"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.9.0",
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.24",
+    "vitest": "^3.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/sqlite-prepare.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/sqlite-prepare/issues"
+  },
+  "homepage": "https://github.com/yourusername/sqlite-prepare#readme"
+}
