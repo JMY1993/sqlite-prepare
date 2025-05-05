@@ -8,11 +8,28 @@
  */
 
 /**
- * Export the D1 database wrapper function
- */
-export { wrapD1 } from './d1';
-
-/**
  * Export query builder utilities and types
  */
-export { build, raw, prepare, SQLQuery, SQLParam } from './query_builder';
+export {
+    SQLQuery,
+    SQLParam,
+    InsertQuery,
+    FragmentSQL
+} from './query-builder/types';
+
+export {
+    build
+} from "./query-builder/build";
+
+export {
+    raw
+} from "./query-builder/raw";
+
+export {
+    wrapD1
+} from "./d1";
+
+export { prepare } from "./query-builder/prepare";
+export { insert, into } from "./query-builder/insert";
+export { fragment } from "./query-builder/fragment";
+

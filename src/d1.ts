@@ -1,6 +1,6 @@
 /// <reference types="./types/d1-types" />
 
-import { prepare } from "./query_builder";
+import { prepare } from "./query-builder/prepare";
 
 /**
  * Creates a function that provides type-safe prepared statements for a D1 database

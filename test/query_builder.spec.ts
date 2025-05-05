@@ -1,6 +1,6 @@
 /// <reference types="../src/types/worker-types" />
 import { describe, it, expect } from 'vitest';
-import { build, raw, SQLQuery } from '../src/index';
+import { build, raw, fragment, SQLQuery } from '../src/index';
 
 describe("Query builder", () => {
   describe("build function", () => {
@@ -78,13 +78,13 @@ describe("Query builder", () => {
   describe("raw function", () => {
     it("should create raw SQL fragment from string", () => {
       const fragment = raw("COUNT(*) as count");
-      expect(fragment).toEqual({ __raw: true, value: "COUNT(*) as count" });
+      expect(fragment).toEqual({ __raw: true, query: "COUNT(*) as count" });
     });
 
     it("should create raw SQL fragment from template literal", () => {
       const column = "users";
       const fragment = raw`COUNT(${column}) as count`;
-      expect(fragment).toEqual({ __raw: true, value: "COUNT(users) as count" });
+      expect(fragment).toEqual({ __raw: true, query: "COUNT(users) as count" });
     });
     
     it("should allow raw SQL fragments in WHERE conditions", () => {
@@ -117,6 +117,37 @@ describe("Query builder", () => {
       const result = build`SELECT * FROM users WHERE data = ${obj}`;
       expect(result.query).toBe("SELECT * FROM users WHERE data = ?");
       expect(result.params[0]).toEqual(JSON.stringify(obj));
+    });
+  });
+
+  describe("fragment function", () => {
+    it("should create SQL fragments without parentheses", () => {
+      const columns = fragment`id, name, created_at`;
+      const result = build`SELECT ${columns} FROM users`;
+      expect(result.query).toBe("SELECT id, name, created_at FROM users");
+      expect(result.params).toEqual([]);
+    });
+
+    it("should handle fragments with parameters", () => {
+      const condition = fragment`status = ${'active'} AND type = ${'user'}`;
+      const result = build`SELECT * FROM users WHERE ${condition}`;
+      expect(result.query).toBe("SELECT * FROM users WHERE status = ? AND type = ?");
+      expect(result.params).toEqual(['active', 'user']);
+    });
+
+    it("should allow fragments in column lists", () => {
+      const count = fragment`COUNT(*) as count`;
+      const result = build`SELECT ${count}, name FROM users`;
+      expect(result.query).toBe("SELECT COUNT(*) as count, name FROM users");
+      expect(result.params).toEqual([]);
+    });
+
+    it("should work with insert statements", () => {
+      const columns = fragment`id, name, created_at`;
+      const values = fragment`1, 'John', NOW()`;
+      const result = build`INSERT INTO users (${columns}) VALUES (${values})`;
+      expect(result.query).toBe("INSERT INTO users (id, name, created_at) VALUES (1, 'John', NOW())");
+      expect(result.params).toEqual([]);
     });
   });
 });
