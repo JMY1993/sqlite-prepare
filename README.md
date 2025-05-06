@@ -137,11 +137,8 @@ Type-safe insert operations:
 ```typescript
 import { insert, into } from "sqlite-prepare";
 
-//`insert` is just a wrapper which returns exactly the parameter it receives: `into("users")` will return `"users"`. This is only for semantic sake.
-
 // Basic insert
 const query = insert(into("users"), {
-  // or: `const query = insert('users'`, into is actually not needed
   name: "John",
   age: 30,
 });
@@ -150,6 +147,46 @@ const query = insert(into("users"), {
 const query = insert(into("users"), {
   created_at: raw("NOW()"),
 });
+
+// Batch insert with same structure
+const query = insert(into("users"), [
+  { name: "John", age: 30 },
+  { name: "Jane", age: 25 },
+  { name: "Bob", age: 35 }
+]);
+
+// Batch insert with different columns
+const query = insert(into("users"), [
+  { name: "John", age: 30 },
+  { name: "Jane", age: 25, role: "admin" },
+  { name: "Bob", status: "active" }  // missing columns will be NULL
+]);
+
+// Batch insert with complex values
+const query = insert(into("users"), [
+  { 
+    name: "John",
+    created_at: raw("datetime('now', '-1 day')"),
+    metadata: { role: "user", permissions: ["read"] }
+  },
+  { 
+    name: "Jane",
+    created_at: raw("datetime('now')"),
+    metadata: { role: "admin", permissions: ["read", "write"] }
+  }
+]);
+
+// Batch insert with subqueries
+const query = insert(into("users"), [
+  { 
+    name: "John",
+    role_id: build`SELECT id FROM roles WHERE name = ${'admin'}`
+  },
+  { 
+    name: "Jane",
+    role_id: build`SELECT id FROM roles WHERE name = ${'user'}`
+  }
+]);
 ```
 
 ### Enhanced Raw SQL
@@ -205,6 +242,24 @@ const db = new Database("mydb.sqlite");
 const query = prepare(db)`SELECT * FROM users WHERE age > ${18}`;
 const results = query.all();
 ```
+
+## Updates
+
+### 2025-05-06 v0.0.8
+
+- Added support for batch insert operations
+  - Handles arrays of objects with same or different structures
+  - Automatically collects all possible columns across all rows
+  - Sets NULL for missing columns in each row
+  - Supports complex values in batch inserts:
+    - Raw SQL expressions
+    - SQL fragments
+    - Subqueries
+    - JSON objects (automatically stringified)
+    - Date objects
+    - Binary data
+  - Maintains parameterization for SQL injection prevention
+  - Fully tested with better-sqlite3 integration tests
 
 ## License
 

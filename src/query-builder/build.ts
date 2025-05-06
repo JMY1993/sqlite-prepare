@@ -77,42 +77,12 @@ export function build(strings: string | TemplateStringsArray, ...values: any[]):
                     }
                 } else if (value && typeof value === 'object') {
                     // Handle special SQL types
-                    if ('__raw' in value && value.__raw === true) {
+                    if ('__raw' in value || "__fragment" in value) {
                         // Raw SQL
                         query += value.query;
                         if (value.params) {
                             params.push(...value.params);
                         }
-                    } else if ('__fragment' in value && value.__fragment === true) {
-                        // Fragment SQL
-                        query += value.query;
-                        params.push(...value.params);
-                    } else if ('__insert' in value && value.__insert === true) {
-                        // Handle insert queries
-                        const columns = Object.keys(value.values);
-                        const placeholders = columns.map(col => {
-                            const val = value.values[col];
-                            if (typeof val === 'object' && val !== null) {
-                                // Handle special SQL types in column values
-                                if ('__raw' in val || '__fragment' in val) {
-                                    return val.query;
-                                } else if ('__subquery' in val) {
-                                    return `(${val.query})`;
-                                }
-                            }
-                            return '?';
-                        }).join(', ');
-                        query += `INSERT INTO ${value.table} (${columns.join(', ')}) VALUES (${placeholders})`;
-                        params.push(...columns.map(col => {
-                            const val = value.values[col];
-                            if (typeof val === 'object' && val !== null) {
-                                // Handle special SQL types (subquery, fragment, raw)
-                                if ('__subquery' in val || '__fragment' in val || '__raw' in val) {
-                                    return val.params || [];
-                                }
-                            }
-                            return val;
-                        }).flat());
                     } else if ('query' in value && 'params' in value) {
                         // Handle nested SQLQuery objects (subqueries)
                         query += '(' + value.query + ')';

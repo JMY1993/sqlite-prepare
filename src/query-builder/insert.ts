@@ -1,44 +1,62 @@
 import { parseValue } from './parseValue';
-import { InsertQuery, SQLParam, FragmentSQL } from './types';
+import { SQLParam, FragmentSQL } from './types';
 
-/**
- * Creates a table reference for insert operations
- * @param table - The table name to insert into
- * @returns The table name
- */
 export function into(table: string): string {
     return table;
 }
 
-/**
- * Creates an insert query for the specified table and values
- * @param table - The table name to insert into
- * @param values - Object containing column-value pairs to insert
- * @returns An InsertQuery object
- * 
- * @example
- * // Basic insert
- * const query = insert(into('users'), { name: 'John', age: 30 });
- * 
- * @example
- * // Using raw SQL for a value
- * const query = insert(into('users'), { created_at: raw('NOW()') });
- * 
- * @example
- * // Using a subquery for a value
- * const subquery = build`SELECT id FROM active_users WHERE status = ${'active'}`;
- * const query = insert(into('users'), { user_id: subquery });
- */
-export function insert(table: string, values: Record<string, any>): InsertQuery {
-    const parsedValues: Record<string, SQLParam | { __raw: true, query: string } | { __subquery: true, query: string, params: SQLParam[] } | FragmentSQL> = {};
+export function insert(table: string, values: Record<string, any>[] | Record<string, any>): FragmentSQL {
+    // Ensure that values is an array
+    const valuesArray = Array.isArray(values) ? values : [values];
     
-    for (const [key, value] of Object.entries(values)) {
-        parsedValues[key] = parseValue(value);
+    if (valuesArray.length === 0) {
+        throw new Error('Values array cannot be empty');
     }
+
+    const params: SQLParam[] = [];
     
+    // Get all unique columns from the values array
+    const columns = new Set<string>();
+    for (const row of valuesArray) {
+        Object.keys(row).forEach(key => columns.add(key));
+    }
+    const columnsList = Array.from(columns);
+
+    // Parse each row and prepare the values for insertion, padding with nulls for missing columns
+    const parsedValuesArray = valuesArray.map(row => {
+        const parsedRow: Record<string, any> = {};
+        for (const col of columnsList) {
+            // Check if the column exists in the row, if not, set it to null
+            const value = col in row ? row[col] : null;
+            parsedRow[col] = parseValue(value);
+        }
+        return parsedRow;
+    });
+
+    // Generate placeholders for each row
+    const rowPlaceholders = parsedValuesArray.map(row => {
+        const rowValues = columnsList.map(col => {
+            const val = row[col];
+            if (typeof val === 'object' && val !== null) {
+                if ('__raw' in val || '__fragment' in val) {
+                    params.push(...(val.params || []));
+                    return val.query;
+                } else if ('__subquery' in val) {
+                    params.push(...val.params);
+                    return `(${val.query})`;
+                }
+            }
+            params.push(val);
+            return '?';
+        });
+        return `(${rowValues.join(', ')})`;
+    }).join(', ');
+
+    const query = `INSERT INTO ${table} (${columnsList.join(', ')}) VALUES ${rowPlaceholders}`;
+
     return {
-        __insert: true,
-        table,
-        values: parsedValues
+        __fragment: true,
+        query,
+        params
     };
-} 
+}
