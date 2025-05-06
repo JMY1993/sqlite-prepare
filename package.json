@@ -1,6 +1,6 @@
 {
   "name": "sqlite-prepare",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A type-safe SQL query builder for Cloudflare D1",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

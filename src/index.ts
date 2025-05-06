@@ -17,19 +17,12 @@ export {
     FragmentSQL
 } from './query-builder/types';
 
-export {
-    build
-} from "./query-builder/build";
+export { build, b } from "./query-builder/build";
 
-export {
-    raw
-} from "./query-builder/raw";
+export { raw, r } from "./query-builder/raw";
+export { prepare, pp } from "./query-builder/prepare";
+export { insert, into, i, it } from "./query-builder/insert";
+export { fragment, f } from "./query-builder/fragment";
+export { validate, v } from "./query-builder/validate";
 
-export {
-    wrapD1
-} from "./d1";
-
-export { prepare } from "./query-builder/prepare";
-export { insert, into } from "./query-builder/insert";
-export { fragment } from "./query-builder/fragment";
-
+export { wrapD1 } from "./d1";

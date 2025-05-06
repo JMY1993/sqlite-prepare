@@ -117,3 +117,5 @@ export function build(strings: string | TemplateStringsArray, ...values: any[]):
 
     return { query, params };
 }
+
+export const b = build;

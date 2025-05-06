@@ -23,3 +23,5 @@ export function prepare(db: D1Database, strings: string | TemplateStringsArray, 
     const q = build(strings, ...values);
     return db.prepare(q.query).bind(...(q.params));
 } 
+
+export const pp = prepare;

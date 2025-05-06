@@ -60,3 +60,6 @@ export function insert(table: string, values: Record<string, any>[] | Record<str
         params
     };
 }
+
+export const i = insert;
+export const it = into;
